@@ -12,6 +12,9 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ApiAircraftRouteImport } from './routes/api/aircraft'
 import { Route as ApiFirmsRouteImport } from './routes/api/firms'
+import { Route as ApiGeoConfigRouteImport } from './routes/api/geo-config'
+import { Route as ApiGeocodeRouteImport } from './routes/api/geocode'
+import { Route as ApiIntelligenceRouteImport } from './routes/api/intelligence'
 import { Route as ApiSatellitesRouteImport } from './routes/api/satellites'
 
 const IndexRoute = IndexRouteImport.update({
@@ -29,6 +32,21 @@ const ApiFirmsRoute = ApiFirmsRouteImport.update({
   path: '/api/firms',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiGeoConfigRoute = ApiGeoConfigRouteImport.update({
+  id: '/api/geo-config',
+  path: '/api/geo-config',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiGeocodeRoute = ApiGeocodeRouteImport.update({
+  id: '/api/geocode',
+  path: '/api/geocode',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiIntelligenceRoute = ApiIntelligenceRouteImport.update({
+  id: '/api/intelligence',
+  path: '/api/intelligence',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiSatellitesRoute = ApiSatellitesRouteImport.update({
   id: '/api/satellites',
   path: '/api/satellites',
@@ -39,12 +57,18 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/api/aircraft': typeof ApiAircraftRoute
   '/api/firms': typeof ApiFirmsRoute
+  '/api/geo-config': typeof ApiGeoConfigRoute
+  '/api/geocode': typeof ApiGeocodeRoute
+  '/api/intelligence': typeof ApiIntelligenceRoute
   '/api/satellites': typeof ApiSatellitesRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/api/aircraft': typeof ApiAircraftRoute
   '/api/firms': typeof ApiFirmsRoute
+  '/api/geo-config': typeof ApiGeoConfigRoute
+  '/api/geocode': typeof ApiGeocodeRoute
+  '/api/intelligence': typeof ApiIntelligenceRoute
   '/api/satellites': typeof ApiSatellitesRoute
 }
 export interface FileRoutesById {
@@ -52,20 +76,48 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/api/aircraft': typeof ApiAircraftRoute
   '/api/firms': typeof ApiFirmsRoute
+  '/api/geo-config': typeof ApiGeoConfigRoute
+  '/api/geocode': typeof ApiGeocodeRoute
+  '/api/intelligence': typeof ApiIntelligenceRoute
   '/api/satellites': typeof ApiSatellitesRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/api/aircraft' | '/api/firms' | '/api/satellites'
+  fullPaths:
+    | '/'
+    | '/api/aircraft'
+    | '/api/firms'
+    | '/api/geo-config'
+    | '/api/geocode'
+    | '/api/intelligence'
+    | '/api/satellites'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/api/aircraft' | '/api/firms' | '/api/satellites'
-  id: '__root__' | '/' | '/api/aircraft' | '/api/firms' | '/api/satellites'
+  to:
+    | '/'
+    | '/api/aircraft'
+    | '/api/firms'
+    | '/api/geo-config'
+    | '/api/geocode'
+    | '/api/intelligence'
+    | '/api/satellites'
+  id:
+    | '__root__'
+    | '/'
+    | '/api/aircraft'
+    | '/api/firms'
+    | '/api/geo-config'
+    | '/api/geocode'
+    | '/api/intelligence'
+    | '/api/satellites'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ApiAircraftRoute: typeof ApiAircraftRoute
   ApiFirmsRoute: typeof ApiFirmsRoute
+  ApiGeoConfigRoute: typeof ApiGeoConfigRoute
+  ApiGeocodeRoute: typeof ApiGeocodeRoute
+  ApiIntelligenceRoute: typeof ApiIntelligenceRoute
   ApiSatellitesRoute: typeof ApiSatellitesRoute
 }
 
@@ -92,6 +144,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiFirmsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/geo-config': {
+      id: '/api/geo-config'
+      path: '/api/geo-config'
+      fullPath: '/api/geo-config'
+      preLoaderRoute: typeof ApiGeoConfigRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/geocode': {
+      id: '/api/geocode'
+      path: '/api/geocode'
+      fullPath: '/api/geocode'
+      preLoaderRoute: typeof ApiGeocodeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/intelligence': {
+      id: '/api/intelligence'
+      path: '/api/intelligence'
+      fullPath: '/api/intelligence'
+      preLoaderRoute: typeof ApiIntelligenceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/satellites': {
       id: '/api/satellites'
       path: '/api/satellites'
@@ -106,6 +179,9 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ApiAircraftRoute: ApiAircraftRoute,
   ApiFirmsRoute: ApiFirmsRoute,
+  ApiGeoConfigRoute: ApiGeoConfigRoute,
+  ApiGeocodeRoute: ApiGeocodeRoute,
+  ApiIntelligenceRoute: ApiIntelligenceRoute,
   ApiSatellitesRoute: ApiSatellitesRoute,
 }
 export const routeTree = rootRouteImport

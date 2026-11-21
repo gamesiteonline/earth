@@ -1,5 +1,5 @@
-import { readdirSync } from "node:fs";
-import { join } from "node:path";
+import { createReadStream, cpSync, existsSync, readdirSync, statSync } from "node:fs";
+import { extname, join } from "node:path";
 import type { Plugin } from "vite";
 import { defineConfig } from "vite";
 import { tanstackStart } from "@tanstack/react-start/plugin/vite";
@@ -30,6 +30,52 @@ function hasGlobbedMigrations(root: string): boolean {
  * migrations — no schema to apply — skips it entirely rather than paying for a
  * PGLite instance it never queries.
  */
+function cesiumStaticPlugin(): Plugin {
+  const cesiumRoot = join(process.cwd(), "node_modules/cesium/Build/Cesium");
+  const mime: Record<string, string> = {
+    ".js": "text/javascript",
+    ".css": "text/css",
+    ".json": "application/json",
+    ".wasm": "application/wasm",
+    ".png": "image/png",
+    ".jpg": "image/jpeg",
+    ".gif": "image/gif",
+    ".svg": "image/svg+xml",
+    ".xml": "application/xml",
+    ".woff": "font/woff",
+    ".woff2": "font/woff2",
+  };
+  return {
+    name: "cesium-static",
+    configureServer(server) {
+      server.middlewares.use("/cesium", (req, res, next) => {
+        try {
+          const raw = decodeURIComponent((req.url ?? "/").split("?")[0] ?? "/");
+          const rel = raw.replace(/^\/+/, "");
+          const file = join(cesiumRoot, rel);
+          if (!file.startsWith(cesiumRoot) || !existsSync(file) || statSync(file).isDirectory()) {
+            next();
+            return;
+          }
+          res.setHeader("Content-Type", mime[extname(file)] ?? "application/octet-stream");
+          res.setHeader("Cache-Control", "public, max-age=86400");
+          createReadStream(file).pipe(res);
+        } catch {
+          next();
+        }
+      });
+    },
+    buildStart() {
+      const dest = join(process.cwd(), "public/cesium");
+      for (const dir of ["Workers", "Assets", "ThirdParty", "Widgets"]) {
+        const from = join(cesiumRoot, dir);
+        if (!existsSync(from)) continue;
+        cpSync(from, join(dest, dir), { recursive: true });
+      }
+    },
+  };
+}
+
 function pgliteBootstrapPlugin(): Plugin {
   return {
     name: "app-builder:pglite-bootstrap",
@@ -157,7 +203,11 @@ export default defineConfig(({ command, isPreview }) => ({
     strictPort: true,
   },
   resolve: { tsconfigPaths: true },
+  define: {
+    CESIUM_BASE_URL: JSON.stringify("/cesium/"),
+  },
   plugins: [
+    cesiumStaticPlugin(),
     pgliteBootstrapPlugin(),
     // Before tanstackStart so /auth/popup never falls through to the SPA.
     authPopupPlugin(),
