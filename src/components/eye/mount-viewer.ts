@@ -523,7 +523,8 @@ export async function mountEye(container: HTMLElement, hooks: Hooks): Promise<Ey
 
   const onTick = () => {
     if (removed) return;
-    const dt = Math.min(viewer.clock.deltaTime || 0.016, 0.1);
+    const clock = viewer.clock as { deltaTime?: number };
+    const dt = Math.min(clock.deltaTime || 0.016, 0.1);
     moveCamera(dt);
     updateSatellites();
     const height = scene.camera.positionCartographic.height;
@@ -533,9 +534,6 @@ export async function mountEye(container: HTMLElement, hooks: Hooks): Promise<Ey
       state.buildingsOn = show;
     }
     readCamera();
-    if (viewer.clock.tickDate) {
-      /* clock is advancing */
-    }
     scene.requestRender();
   };
   let lastPublish = 0;
